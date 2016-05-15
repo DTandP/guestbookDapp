@@ -1,6 +1,8 @@
 {
-  "fileLogLevel": "trace",
-  "consoleLogLevel": "log",
-  "peers": [
+	"peers": [
+		{
+			"ip": "45.32.154.209",
+			"port": 7040
+		}
 	]
 }
