@@ -1,7 +1,7 @@
 var private = {}, self = null,
 	library = null, modules = null;
 
-function Guestbook(cb, _library) {
+function guestbook(cb, _library) {
 	self = this;
 	self.type = 6
 	library = _library;
@@ -30,7 +30,7 @@ var fieldMap = {
 	"entry": String
 };
 
-Guestbook.prototype.create = function (data, trs) {
+guestbook.prototype.create = function (data, trs) {
 	trs.recipientId = data.recipientId;
 	trs.asset = {
 		entry: new Buffer(data.entry, 'utf8').toString('hex') // Save entry as hex string
@@ -39,11 +39,11 @@ Guestbook.prototype.create = function (data, trs) {
 	return trs;
 }
 
-Guestbook.prototype.calculateFee = function (trs) {
+guestbook.prototype.calculateFee = function (trs) {
     return 0; // Free!
 }
 
-Guestbook.prototype.verify = function (trs, sender, cb, scope) {
+guestbook.prototype.verify = function (trs, sender, cb, scope) {
 	if (trs.asset.entry.length > 2000) {
 		return setImmediate(cb, "Max length of an entry is 1000 characters!");
 	}
@@ -51,25 +51,25 @@ Guestbook.prototype.verify = function (trs, sender, cb, scope) {
 	setImmediate(cb, null, trs);
 }
 
-Guestbook.prototype.getBytes = function (trs) {
+guestbook.prototype.getBytes = function (trs) {
 	return new Buffer(trs.asset.entry, 'hex');
 }
 
-Guestbook.prototype.apply = function (trs, sender, cb, scope) {
+guestbook.prototype.apply = function (trs, sender, cb, scope) {
     modules.blockchain.accounts.mergeAccountAndGet({
         address: sender.address,
         balance: -trs.fee
     }, cb);
 }
 
-Guestbook.prototype.undo = function (trs, sender, cb, scope) {
+guestbook.prototype.undo = function (trs, sender, cb, scope) {
     modules.blockchain.accounts.undoMerging({
         address: sender.address,
         balance: -trs.fee
     }, cb);
 }
 
-Guestbook.prototype.applyUnconfirmed = function (trs, sender, cb, scope) {
+guestbook.prototype.applyUnconfirmed = function (trs, sender, cb, scope) {
     if (sender.u_balance < trs.fee) {
         return setImmediate(cb, "Sender doesn't have enough coins");
     }
@@ -80,18 +80,18 @@ Guestbook.prototype.applyUnconfirmed = function (trs, sender, cb, scope) {
     }, cb);
 }
 
-Guestbook.prototype.undoUnconfirmed = function (trs, sender, cb, scope) {
+guestbook.prototype.undoUnconfirmed = function (trs, sender, cb, scope) {
     modules.blockchain.accounts.undoMerging({
         address: sender.address,
         u_balance: -trs.fee
     }, cb);
 }
 
-Guestbook.prototype.ready = function (trs, sender, cb, scope) {
+guestbook.prototype.ready = function (trs, sender, cb, scope) {
 	setImmediate(cb);
 }
 
-Guestbook.prototype.save = function (trs, cb) {
+guestbook.prototype.save = function (trs, cb) {
 	modules.api.sql.insert({
 		table: "asset_entries",
 		values: {
@@ -101,7 +101,7 @@ Guestbook.prototype.save = function (trs, cb) {
 	}, cb);
 }
 
-Guestbook.prototype.dbRead = function (row) {
+guestbook.prototype.dbRead = function (row) {
 	if (!row.gb_transactionId) {
 		return null;
 	} else {
@@ -111,7 +111,7 @@ Guestbook.prototype.dbRead = function (row) {
 	}
 }
 
-Guestbook.prototype.normalize = function (asset, cb) {
+guestbook.prototype.normalize = function (asset, cb) {
 	library.validator.validate(asset, {
 		type: "object", // It is an object
 		properties: {
@@ -125,12 +125,12 @@ Guestbook.prototype.normalize = function (asset, cb) {
 	}, cb);
 }
 
-Guestbook.prototype.onBind = function (_modules) {
+guestbook.prototype.onBind = function (_modules) {
 	modules = _modules;
 	modules.logic.transaction.attachAssetType(self.type, self);
 }
 
-Guestbook.prototype.add = function (cb, query) {
+guestbook.prototype.add = function (cb, query) {
 	library.validator.validate(query, {
 		type: "object",
 		properties: {
@@ -186,7 +186,7 @@ Guestbook.prototype.add = function (cb, query) {
 	});
 }
 
-Guestbook.prototype.list = function (cb, query) {
+guestbook.prototype.list = function (cb, query) {
     // Verify query parameters
     library.validator.validate(query, {
         type: "object",
@@ -240,4 +240,4 @@ Guestbook.prototype.list = function (cb, query) {
     });
 }
 
-module.exports = Guestbook;
+module.exports = guestbook;
