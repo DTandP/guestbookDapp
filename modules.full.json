@@ -30,5 +30,5 @@
 	"contracts/delegates": "./modules/contracts/delegates.js",
 	"contracts/withdrawaltransfer" : "./modules/contracts/withdrawaltransfer.js",
 	"contracts/token": "./modules/contracts/token.js",
-	"contracts/Guestbook": "./modules/contracts/Guestbook.js"
+	"contracts/guestbook": "./modules/contracts/guestbook.js"
 }
